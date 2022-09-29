@@ -1,0 +1,145 @@
+<template>
+  <template if:true={isLoading}>
+    <lightning-spinner alternative-text="Loading"></lightning-spinner>
+  </template>
+    <lightning-card  variant="Narrow"  
+      title="Calendar" icon-name="standard:event">
+      <div>
+        <div class="slds-m-around_small">
+          <div id="calendar" class="fullcalendarjs"></div>
+        </div>
+      </div>
+      <template if:true={selectedEvent}>
+        {selectedEvent.title}
+      </template>
+      <!-- Display the Selected Event Details -->
+      <template if:true={selectedEvent} >
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large"
+          aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+          <div class="slds-modal__container">
+              <header class="slds-modal__header">
+                <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Available Slot</h2>
+              </header>
+              <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+  
+                <!-- <lightning-card  variant="Narrow"  title={selectedEvent.title} icon-name="standard:event"> -->
+                  <lightning-layout>
+                    <lightning-layout-item size="6"> 
+                      
+                      <div>
+                        <lightning-input label="Patient" 
+                        value={patientName}
+                        variant="label-inline"
+                        disabled="true"></lightning-input>
+                      </div>
+                        
+                      <div>
+                        <!-- Appointment Type : {selectedEvent.title} -->
+                        <lightning-input label="Appointment Type" 
+                        value={selectedEvent.title}
+                        variant="label-inline"
+                        disabled="true"></lightning-input>
+                      </div>
+
+                      <div>
+                        <!-- Appointment Type : {selectedEvent.title} -->
+                        <lightning-input label="Appointment Start Time" 
+                        type="datetime"
+                        value={appointmentStartTime}
+                        variant="label-inline"
+                        disabled="true"
+                        onchange={setAppointmentStartTime}
+                        ></lightning-input>
+                      </div>
+
+
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                     
+                      <div>
+                        <lightning-input label="Location" 
+                        value={selectedSlotDetails.locationName}
+                        variant="label-inline"
+                        disabled="true"></lightning-input>
+                      </div>
+                        
+                      <div>
+                        <lightning-input label="Resource Type" 
+                        value={selectedSlotDetails.resourceTypeName}
+                        variant="label-inline"
+                        disabled="true"></lightning-input>
+                      </div>
+
+                      <div>
+                        <!-- Appointment Type : {selectedEvent.title} -->
+                        <lightning-input label="Appointment End Time" 
+                        value={appointmentEndTime}
+                        variant="label-inline"
+                        type="datetime"
+                        disabled="true"
+                        onchange={setAppointmentEndTime}
+                        ></lightning-input>
+                      </div>
+                       
+
+                    </lightning-layout-item>
+                  </lightning-layout>
+                  <br/>
+                  <lightning-record-form
+                            object-api-name="Appointment__c"
+                            fields={appointmentFields}
+                            columns="2"
+                            onsubmit={onSave}
+                            oncancel={closeModal}
+                            onsuccess={onSuccess}
+                            >
+                  </lightning-record-form>
+
+                <!-- </lightning-card> -->
+                
+              </div>
+              <footer class="slds-modal__footer">
+                <!-- <lightning-button 
+                    variant="destructive-text" 
+                    label="Cancel" 
+                    title="Cancel" 
+                    onclick={closeModal}
+                    class="slds-m-right_x-small">
+                </lightning-button>
+                <button 
+                class="slds-button slds-button_brand" 
+                onclick={closeModal}>Book Appointment</button> -->
+              </footer>
+          </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+      </template>
+  
+      <!-- Display the Created Record Details -->
+      <template if:true={appointmentId}>
+        <div class="custom-modal">
+          <section role="dialog" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width: 65rem;">
+              <header class="slds-modal__header">
+                <span class="slds-modal__close">
+                </span>
+                <h2 class="slds-text-heading_medium slds-hyphenate">{appointmentName}</h2>
+              </header>
+              <div class="slds-modal__content slds-p-around_medium">
+                <lightning-record-form record-id={appointmentId}
+                                       object-api-name="Appointment__c"
+                                       layout-type="Full"
+                                       columns="2"
+                                       mode="readonly" >
+                </lightning-record-form>
+              </div>
+              <footer class="slds-modal__footer">
+                <lightning-button label="Close" title="Close" onclick={appointmentClose} class="slds-m-right_small"></lightning-button>
+              </footer>
+            </div>
+          </section>
+          <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+      </template>
+    </lightning-card>
+  </template>
